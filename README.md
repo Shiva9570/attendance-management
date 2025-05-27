@@ -1,6 +1,3 @@
-Alright Mishra bhai, here's a clean, crisp, and professional README description that you can slap onto your GitHub like a badge of honor. It's tailored exactly for your **Attendance Management Academic Project** using Flask, OpenCV, and SQLite.
-
----
 
 ## 📘 Attendance Management - Academic Project
 
