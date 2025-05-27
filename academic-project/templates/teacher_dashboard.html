@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --zinc-700: #3f3f46;
+            --zinc-600: #52525b;
+            --zinc-500: #71717a;
+            --zinc-400: #a1a1aa;
+            --zinc-300: #d4d4d8;
+            --zinc-200: #e4e4e7;
+            --zinc-150: #f4f4f5;
+            --zinc-100: #f8fafc;
+            --primary-color: #4CAF50;
+            --primary-hover: #45a049;
+            --danger-color: #dc3545;
+            --danger-hover: #bb2d3b;
+        }
+
+        body {
+            background-color: var(--zinc-700);
+            color: var(--zinc-150);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--zinc-600);
+            border-bottom: 1px solid var(--zinc-500);
+            padding: 1rem;
+        }
+
+        .navbar-brand {
+            color: var(--zinc-150);
+            font-weight: 600;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--zinc-300);
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--zinc-150);
+        }
+
+        .container {
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background-color: var(--zinc-600);
+            border-radius: 16px;
+            border: 1px solid var(--zinc-500);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            color: var(--zinc-150);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            color: var(--zinc-300);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            background-color: var(--zinc-700);
+            border: 1px solid var(--zinc-500);
+            color: var(--zinc-150);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .form-control:focus {
+            background-color: var(--zinc-700);
+            border-color: var(--primary-color);
+            color: var(--zinc-150);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .attendance-list {
+            margin-top: 2rem;
+        }
+
+        .attendance-item {
+            background-color: var(--zinc-700);
+            border: 1px solid var(--zinc-500);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .attendance-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .attendance-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .attendance-name {
+            font-weight: 500;
+            color: var(--zinc-150);
+        }
+
+        .attendance-date {
+            color: var(--zinc-400);
+            font-size: 0.9rem;
+        }
+
+        .attendance-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-present {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status-absent {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .video-container {
+            width: 100%;
+            margin: 1rem 0;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: var(--zinc-700);
+            display: none;
+        }
+
+        #videoElement {
+            width: 100%;
+            border-radius: 12px;
+            transform: scaleX(-1);
+        }
+
+        #capturedImage {
+            width: 100%;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .camera-controls {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .mark-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container-fluid">
+            <span class="navbar-brand">Teacher Dashboard</span>
+            <div class="navbar-nav flex-row">
+                <a class="nav-link me-3" href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <h3 class="card-title">Mark Attendance</h3>
+                    <form id="attendanceForm">
+                        <div class="mb-3">
+                            <label for="roll_number" class="form-label">Student Roll Number</label>
+                            <select class="form-control" id="roll_number" name="roll_number" required>
+                                <option value="">Select Student</option>
+                                <!-- Student roll numbers will be loaded here by JS -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <select class="form-control" id="subject" name="subject" required>
+                                <option value="">Select Subject</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Physics">Physics</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Biology">Biology</option>
+                                <option value="Computer Science">Computer Science</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                        
+                        <div class="video-container" id="videoContainer" style="display:none;position:relative;">
+                            <video id="videoElement" autoplay playsinline></video>
+                            <canvas id="faceCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+                            <img id="capturedImage" alt="Captured photo" style="display:none;">
+                            <div class="camera-controls">
+                                <button type="button" class="btn btn-primary" id="captureBtn">Capture Photo</button>
+                                <button type="button" class="btn btn-secondary" id="retakeBtn" style="display: none;">Retake</button>
+                                <button type="button" class="btn btn-success" id="submitPresentBtn" style="display:none;">Submit Present</button>
+                            </div>
+                        </div>
+
+                        <div class="mark-buttons">
+                            <button type="button" class="btn btn-primary" onclick="startPresent()">Mark Present</button>
+                            <button type="button" class="btn btn-danger" onclick="markAbsent()">Mark Absent</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <h3 class="card-title">Attendance Records</h3>
+                    <div class="mb-3">
+                        <label for="filterDate" class="form-label">Select Date</label>
+                        <input type="date" class="form-control" id="filterDate" onchange="loadAttendance()">
+                    </div>
+                    <div class="mb-3">
+                        <label for="filterSubject" class="form-label">Filter by Subject</label>
+                        <select class="form-control" id="filterSubject" onchange="loadAttendance()">
+                            <option value="">All Subjects</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                            <option value="Computer Science">Computer Science</option>
+                        </select>
+                    </div>
+                    <div id="attendanceList" class="attendance-list">
+                        <!-- Attendance records will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script>
+        // Set default date values to today
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            document.getElementById('filterDate').value = today;
+            loadAttendance();
+            loadStudentRollNumbers(); // Initial load of student roll numbers
+        });
+
+        let stream;
+        let imageData = null;
+        const video = document.getElementById('videoElement');
+        const canvas = document.createElement('canvas');
+        const capturedImage = document.getElementById('capturedImage');
+        const captureBtn = document.getElementById('captureBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const submitPresentBtn = document.getElementById('submitPresentBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const faceCanvas = document.getElementById('faceCanvas');
+        let faceDetectionInterval;
+
+        async function loadFaceApiModels() {
+            // Use loadFromUri with a public CDN or local weights folder
+            await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+        }
+
+        function startFaceDetection() {
+            faceDetectionInterval = setInterval(async () => {
+                if (video.readyState === 4) {
+                    // Ensure canvas matches video size in pixels
+                    faceCanvas.width = video.videoWidth;
+                    faceCanvas.height = video.videoHeight;
+                    faceCanvas.style.width = video.offsetWidth + 'px';
+                    faceCanvas.style.height = video.offsetHeight + 'px';
+                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+                    const ctx = faceCanvas.getContext('2d');
+                    ctx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
+                    detections.forEach(det => {
+                        const { x, y, width, height } = det.box;
+                        ctx.strokeStyle = '#00FF00';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(x, y, width, height);
+                    });
+                }
+            }, 100);
+        }
+
+        function stopFaceDetection() {
+            clearInterval(faceDetectionInterval);
+            const ctx = faceCanvas.getContext('2d');
+            ctx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
+        }
+
+        async function startCamera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Camera Not Supported',
+                    text: 'Your browser does not support camera access. Please use a modern browser like Chrome or Edge.'
+                });
+                return;
+            }
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: "user"
+                    } 
+                });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                capturedImage.style.display = 'none';
+                captureBtn.style.display = 'block';
+                retakeBtn.style.display = 'none';
+                submitPresentBtn.style.display = 'none';
+                faceCanvas.style.display = 'block';
+                await loadFaceApiModels();
+                startFaceDetection();
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Camera Error',
+                    text: 'Unable to access camera. Please check permissions or close other apps using the camera.',
+                });
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            videoContainer.style.display = 'none';
+            imageData = null;
+            stopFaceDetection();
+        }
+
+        captureBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            imageData = canvas.toDataURL('image/jpeg');
+            capturedImage.src = imageData;
+            video.style.display = 'none';
+            capturedImage.style.display = 'block';
+            captureBtn.style.display = 'none';
+            retakeBtn.style.display = 'block';
+            submitPresentBtn.style.display = 'block';
+            stopFaceDetection();
+            faceCanvas.style.display = 'none';
+        });
+
+        retakeBtn.addEventListener('click', () => {
+            imageData = null;
+            video.style.display = 'block';
+            capturedImage.style.display = 'none';
+            captureBtn.style.display = 'block';
+            retakeBtn.style.display = 'none';
+            submitPresentBtn.style.display = 'none';
+            faceCanvas.style.display = 'block';
+            startFaceDetection();
+        });
+
+        function startPresent() {
+            const form = document.getElementById('attendanceForm');
+            const formData = new FormData(form);
+            
+            if (!formData.get('roll_number') || !formData.get('subject') || !formData.get('date')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Fields',
+                    text: 'Please fill in all required fields'
+                });
+                return;
+            }
+
+            videoContainer.style.display = 'block';
+            startCamera();
+        }
+
+        submitPresentBtn.addEventListener('click', markPresent);
+
+        function markPresent() {
+            const form = document.getElementById('attendanceForm');
+            const formData = new FormData(form);
+            if (!imageData) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Photo Required',
+                    text: 'Please capture a photo before marking present'
+                });
+                return;
+            }
+            formData.append('image', imageData);
+
+            // Show validating popup for 5 seconds, then fetch backend result
+            Swal.fire({
+                title: 'Validating Face...',
+                html: 'Please wait while the face is being validated.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            setTimeout(() => {
+                fetch('/mark_attendance', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Face Validated',
+                            text: data.message
+                        });
+                        form.reset();
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('date').value = today;
+                        stopCamera();
+                        loadAttendance();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Face Not Matched',
+                            text: data.message + ' Please try again.'
+                        }).then(() => {
+                            // Allow retry: show video again for recapture
+                            imageData = null;
+                            video.style.display = 'block';
+                            capturedImage.style.display = 'none';
+                            captureBtn.style.display = 'block';
+                            retakeBtn.style.display = 'none';
+                            submitPresentBtn.style.display = 'none';
+                            faceCanvas.style.display = 'block';
+                            startFaceDetection();
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to mark attendance'
+                    });
+                });
+            }, 5000);
+        }
+
+        function markAbsent() {
+            const form = document.getElementById('attendanceForm');
+            const formData = new FormData(form);
+            
+            if (!formData.get('roll_number') || !formData.get('subject') || !formData.get('date')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Fields',
+                    text: 'Please fill in all required fields'
+                });
+                return;
+            }
+
+            fetch('/mark_absent', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: data.message
+                    });
+                    form.reset();
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('date').value = today;
+                    loadAttendance();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to mark attendance'
+                });
+            });
+        }
+
+        function loadAttendance() {
+            const subject = document.getElementById('filterSubject').value;
+            const date = document.getElementById('filterDate').value;
+            fetch(`/get_attendance?subject=${subject}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                const attendanceList = document.getElementById('attendanceList');
+                attendanceList.innerHTML = '';
+
+                if (data.length === 0) {
+                    attendanceList.innerHTML = '<p class="text-center text-muted">No attendance records for selected date</p>';
+                    return;
+                }
+
+                data.forEach(record => {
+                    const attendanceItem = document.createElement('div');
+                    attendanceItem.className = 'attendance-item';
+                    attendanceItem.innerHTML = `
+                        <div class="attendance-info">
+                            <div>
+                                <div class="attendance-name">${record.student_name} (${record.roll_number})</div>
+                                <div class="attendance-date">${record.subject} - ${record.time}</div>
+                            </div>
+                            <span class="attendance-status ${record.status ? 'status-present' : 'status-absent'}">
+                                ${record.status ? 'Present' : 'Absent'}
+                            </span>
+                        </div>
+                    `;
+                    attendanceList.appendChild(attendanceItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const attendanceList = document.getElementById('attendanceList');
+                attendanceList.innerHTML = '<p class="text-center text-danger">Failed to load attendance records</p>';
+            });
+        }
+
+        function showForgotPassword(role) {
+            // Placeholder function to show forgot password modal or alert
+            Swal.fire({
+                icon: 'info',
+                title: 'Forgot Password?',
+                text: `This feature is not implemented yet. (${role})`,
+                confirmButtonText: 'OK'
+            });
+        }
+
+        // Load student roll numbers for the dropdown
+        async function loadStudentRollNumbers() {
+            try {
+                const response = await fetch('/get_student_list');
+                const students = await response.json();
+                const rollNumberSelect = document.getElementById('roll_number');
+                rollNumberSelect.innerHTML = '<option value="">Select Student</option>'; // Clear existing options
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.roll_number;
+                    option.textContent = `${student.name} (${student.roll_number})`;
+                    rollNumberSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading students:', error);
+            }
+        }
+    </script>
+</body>
+</html>

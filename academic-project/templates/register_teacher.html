@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Registration - Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --zinc-700: #3f3f46;
+            --zinc-600: #52525b;
+            --zinc-500: #71717a;
+            --zinc-400: #a1a1aa;
+            --zinc-300: #d4d4d8;
+            --zinc-200: #e4e4e7;
+            --zinc-150: #f4f4f5;
+            --zinc-100: #f8fafc;
+            --primary-color: #4CAF50;
+            --primary-hover: #45a049;
+        }
+
+        body {
+            background-color: var(--zinc-700);
+            color: var(--zinc-150);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+        }
+
+        .card {
+            background-color: var(--zinc-600);
+            border-radius: 16px;
+            border: 1px solid var(--zinc-500);
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            color: var(--zinc-150);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-label {
+            color: var(--zinc-300);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            background-color: var(--zinc-700);
+            border: 1px solid var(--zinc-500);
+            color: var(--zinc-150);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus {
+            background-color: var(--zinc-700);
+            border-color: var(--primary-color);
+            color: var(--zinc-150);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 24px;
+            font-weight: 500;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .back-link {
+            color: var(--zinc-300);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--zinc-150);
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .password-requirements {
+            color: var(--zinc-400);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .password-requirements ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+
+        .password-requirements li {
+            margin: 0.2rem 0;
+        }
+
+        .valid-requirement {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Back to Home
+        </a>
+        
+        <div class="card">
+            <h2 class="card-title">Teacher Registration</h2>
+            <form id="registrationForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="password-requirements">
+                        <p class="mb-1">Password must contain:</p>
+                        <ul>
+                            <li id="lengthReq">At least 8 characters</li>
+                            <li id="upperReq">One uppercase letter</li>
+                            <li id="lowerReq">One lowercase letter</li>
+                            <li id="numberReq">One number</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const form = document.getElementById('registrationForm');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const passwordError = document.getElementById('passwordError');
+
+        // Password requirements elements
+        const lengthReq = document.getElementById('lengthReq');
+        const upperReq = document.getElementById('upperReq');
+        const lowerReq = document.getElementById('lowerReq');
+        const numberReq = document.getElementById('numberReq');
+
+        // Password validation
+        function validatePassword(value) {
+            const requirements = {
+                length: value.length >= 8,
+                upper: /[A-Z]/.test(value),
+                lower: /[a-z]/.test(value),
+                number: /[0-9]/.test(value)
+            };
+
+            lengthReq.className = requirements.length ? 'valid-requirement' : '';
+            upperReq.className = requirements.upper ? 'valid-requirement' : '';
+            lowerReq.className = requirements.lower ? 'valid-requirement' : '';
+            numberReq.className = requirements.number ? 'valid-requirement' : '';
+
+            return Object.values(requirements).every(req => req);
+        }
+
+        password.addEventListener('input', () => {
+            validatePassword(password.value);
+        });
+
+        confirmPassword.addEventListener('input', () => {
+            if (password.value !== confirmPassword.value) {
+                passwordError.textContent = 'Passwords do not match';
+            } else {
+                passwordError.textContent = '';
+            }
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validatePassword(password.value)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Password',
+                    text: 'Please meet all password requirements'
+                });
+                return;
+            }
+            
+            if (password.value !== confirmPassword.value) {
+                passwordError.textContent = 'Passwords do not match';
+                return;
+            }
+
+            const formData = new FormData(form);
+            formData.delete('confirm_password');
+
+            try {
+                const response = await fetch('/register_teacher', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: data.message,
+                        confirmButtonText: 'Go to Login'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/teacher_login';
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
+                }
+            } catch (error) {
+                console.error('Error registering:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to register. Please try again.'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

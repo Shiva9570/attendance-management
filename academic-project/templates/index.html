@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --zinc-700: #3f3f46;
+            --zinc-600: #52525b;
+            --zinc-500: #71717a;
+            --zinc-400: #a1a1aa;
+            --zinc-300: #d4d4d8;
+            --zinc-200: #e4e4e7;
+            --zinc-150: #f4f4f5;
+            --zinc-100: #f8fafc;
+            --primary-color: #4CAF50;
+            --primary-hover: #45a049;
+        }
+
+        body {
+            background-color: var(--zinc-700);
+            color: var(--zinc-150);
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--zinc-600);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+            border: 1px solid var(--zinc-500);
+        }
+
+        h1 {
+            color: var(--zinc-150);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .nav-tabs {
+            border-bottom: 1px solid var(--zinc-500);
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--zinc-300);
+            border: none;
+            padding: 12px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--zinc-150);
+            border-color: transparent;
+            background-color: var(--zinc-500);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--zinc-150);
+            background-color: var(--zinc-500);
+            border-color: transparent;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .tab-content {
+            background-color: var(--zinc-600);
+            padding: 25px;
+            border-radius: 0 0 12px 12px;
+            border: none;
+        }
+
+        .form-label {
+            color: var(--zinc-150);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--zinc-700);
+            border: 1px solid var(--zinc-500);
+            color: var(--zinc-150);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--zinc-700);
+            border-color: var(--primary-color);
+            color: var(--zinc-150);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 640px;
+            margin: 20px auto;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #videoElement, #attendanceVideo {
+            width: 100%;
+            border-radius: 12px;
+            background-color: var(--zinc-700);
+        }
+
+        .captured-image {
+            display: none;
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 24px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--zinc-500);
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--zinc-400);
+        }
+
+        .capture-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .retake-btn {
+            margin-top: 10px;
+        }
+
+        .attendance-table {
+            margin-top: 20px;
+            background-color: var(--zinc-700);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table {
+            color: var(--zinc-150);
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: var(--zinc-600);
+            border-bottom: 2px solid var(--zinc-500);
+            padding: 15px;
+            font-weight: 600;
+        }
+
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid var(--zinc-500);
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: rgba(76, 175, 80, 0.2);
+            border: 1px solid var(--primary-color);
+            color: var(--zinc-150);
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: var(--zinc-150);
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            color: var(--zinc-150);
+        }
+
+        .text-success {
+            color: #4CAF50 !important;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Face Recognition Attendance System</h1>
+        
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button">Register Student</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button">Mark Attendance</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="view-tab" data-bs-toggle="tab" data-bs-target="#view" type="button">View Attendance</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <!-- Register Student Tab -->
+            <div class="tab-pane fade show active" id="register">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Student Name</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rollNumber" class="form-label">Roll Number</label>
+                        <input type="text" class="form-control" id="rollNumber" required>
+                    </div>
+                    <div class="video-container">
+                        <video id="videoElement" autoplay></video>
+                        <img id="capturedImage" class="captured-image" alt="Captured image">
+                        <button type="button" class="btn btn-primary capture-btn" id="captureBtn">Capture Photo</button>
+                        <button type="button" class="btn btn-secondary capture-btn retake-btn" id="retakeBtn" style="display: none;">Retake Photo</button>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Register Student</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Mark Attendance Tab -->
+            <div class="tab-pane fade" id="attendance">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="attendanceRollNumber" class="form-label">Roll Number</label>
+                        <input type="text" class="form-control" id="attendanceRollNumber" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="subject" class="form-label">Subject</label>
+                        <select class="form-select" id="subject" required>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="video-container">
+                    <video id="attendanceVideo" autoplay></video>
+                    <img id="attendanceCapturedImage" class="captured-image" alt="Captured image">
+                    <button type="button" class="btn btn-primary capture-btn" id="attendanceCaptureBtn">Capture Photo</button>
+                    <button type="button" class="btn btn-secondary capture-btn retake-btn" id="attendanceRetakeBtn" style="display: none;">Retake Photo</button>
+                </div>
+                <div class="text-center">
+                    <button id="markAttendanceBtn" class="btn btn-primary" disabled>Mark Attendance</button>
+                </div>
+                <div id="attendanceResult" class="alert mt-3" style="display: none;"></div>
+            </div>
+
+            <!-- View Attendance Tab -->
+            <div class="tab-pane fade" id="view">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="viewSubject" class="form-label">Subject</label>
+                        <select class="form-select" id="viewSubject">
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="viewDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="viewDate">
+                    </div>
+                </div>
+                <button id="viewAttendanceBtn" class="btn btn-primary">View Attendance</button>
+                <div class="attendance-table">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Roll Number</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
